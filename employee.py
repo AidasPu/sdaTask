@@ -18,7 +18,7 @@ class Employee():
         first_name, last_name, role, annual_salary, feedback, years_employed, email = employee_string.split(",")
         annual_salary, feedback, years_employed = float(annual_salary), int(feedback), int(years_employed)
         if cls.validate_email(email):
-            return cls(first_name,last_name,role,annual_salary,feedback,years_employed,email)
+            return cls(first_name, last_name, role, annual_salary, feedback, years_employed, email)
 
     @staticmethod
     def validate_email(email):
