@@ -18,30 +18,47 @@ class DatabaseContextManager(object):
 
 
 def create_employee_table():
-    query = """CREATE TABLE Employees(
+    query = """CREATE TABLE IF NOT EXISTS Employees(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 first_name TEXT,
                 last_name TEXT,
                 role TEXT,
                 annual_salary FLOAT,
-                feedback INTEGER)"""
+                feedback INTEGER,
+                years_employed INTEGER,
+                email TEXT)"""
     with DatabaseContextManager("employees") as db:
         db.execute(query)
 
 
-def create_employee(first_name: str, last_name: str, annual_salary: float):
-    query = f"INSERT INTO Employees(first_name, last_name, annual_salary) VALUES('{first_name}','{last_name}',{annual_salary})"
+def create_employee(first_name: str, last_name: str, role: str, annual_salary: float, feedback: int,
+                    years_employed: int, email: str):
+    query = f"""INSERT INTO Employees(first_name, last_name, role, annual_salary, feedback, years_employed, email) 
+                VALUES('{first_name}','{last_name}','{role}',{annual_salary},'{feedback}','{years_employed}', '{email}')"""
     with DatabaseContextManager("employees") as db:
         db.execute(query)
 
 
-def get_employee(first_name: str, last_name: str):
-    query = f"SELECT * FROM Employees WHERE first_name = {first_name} OR last_name = {last_name}"
+def get_employees():
+    query = f"SELECT * FROM Employees"
+    with DatabaseContextManager("employees") as db:
+        data = db.execute(query)
+        for record in data:
+            print(record)
+
+
+def check_if_employee_exists_in_database(email: str):
+    query = f"SELECT * FROM Employees WHERE email = '{email}'"
     with DatabaseContextManager("employees") as db:
         db.execute(query)
+        employee = db.fetchone()
+
+    if employee == None:
+        return False
+    return True
 
 
-def update_employee_feedback(feedback: int, role: str, first_name: str, last_name: str):
-    query = f"UPDATE Employees SET feedback = {feedback}, role = {role} WHERE first_name = {first_name} AND last_name = {last_name}"
+def delete_employee(email: str):
+    query = f"DELETE FROM Employees WHERE email = '{email}'"
     with DatabaseContextManager("employees") as db:
         db.execute(query)
